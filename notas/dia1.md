@@ -335,11 +335,28 @@ Por eso decimos que tenemos infraestructura como código.
 
 Un script de terraform es una carpeta, llena de archivos .tf (que se escriben con sintaxis HCL)
 Dentro de HCL se definen:
-- terraform
-- provider
-- resource
-- variable
-- output
-- data
-- module
-- locals
+- terraform         Declara los proveedores con los que vamos a trabajar
+- provider          Configura parametros de ese proveedor (que el proveedor necesita)
+- resource          Un recurso que quiero gestionar en un proveedor
+- variable          Parametros/Argeumento del script
+                        $1 $2 $3
+- output            Salidas del script
+- data              Queries (consultas) que puedo hacer al proveedor
+- module **
+- locals **         Variables de mi script
+
+
+# Proveedor en terraform
+
+AWS o Azure no son un PROVEEDOR desde el punto de vista de terraform.
+
+Para terraform, un proveedor es un programa que instalo en local y que se integra con terraform 
+(terraform le pide cosas... a ese programa): terraform/aws provider
+                                             terraform/azure provider
+                                             nutanix/nutanix provider
+                                             
+    script -> terraform -> provider ->  ? 
+                                        cloud
+                                        nutanix
+                                        kubernetes
+                                        docker
