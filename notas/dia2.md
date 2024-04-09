@@ -82,11 +82,194 @@ Que conseguimos con esto:
     Esos provider son programas que debemos instalar localmente... y hay tropecientos.
         >>> https://registry.terraform.io/browse/providers
 
-- Interprete: comando terraform
+- Interprete: comando terraform. Al interprete es al que le doy ORDENES !!!!
   Operaciones:
-    init        Descargar los proveedores
-    validate
-    plan
-    apply
-    destroy
+    init        Descargar los proveedores que definimos en el script (normalmente en el archivo versions)
+    validate    Valida el script (la sintaxis)
+    plan        Dame el plan de ejecución. Lo que vas a hacer para conseguir tener lo que quiero tener (lo que he declarado)
+    apply       Aplicar el plan: EL PLAN DEPENDE DEL ESTADO ACTUAL DEL SISTEMA
+                    Creará los recursos definidos
+                    y/o Modificará recursos
+                    y/o Borrará recursos
+    destroy     Desmantelar infra (Esto es heavy)
     
+Los lenguajes delcarativos me ofrecen IDEMPOTENCIA:
+    Da igual el estado inicial de un sistema, siempre acabo en el mismo estado final
+
+# Nginx
+
+Nginx es un proyecto que surje como PROXY REVERSO
+Con el tiempo gana funcionalidad de servidor weblogic
+
+Al contrario que Apache httpd server, que sale como servidor weblogicY con el tiempo adquiere funcionalidad de proxy reverso
+
+Nginx hoy en día es el proxy reverso y el servidor web más usado del mundo... pasó al apache hace ya 4/5 años.
+    
+    -------red de amazon----------------------------------
+     |                                                  |
+     172.31.35.6                                    172.31.35.200
+     |  NAT :83 -> 172.17.0.2:80                        |
+     IvanPC                                             MenchuPC
+      |
+      172.17.0.1
+      |
+      |- 172.17.0.2 - Contenedor de nginx: 80
+      |
+      red de docker
+      
+Terraform es solo una herramienta más de una cadena muy larga : DEVOPS:
+
+Empiezo un proyecto de software nuevo en la empresa:
+
+
+Eso lo necesito en x entornos:
+- Desarrollo
+    - Servidor de apps JAVA: Weblogic
+    - BBDD MySQL (mirroring)
+    - RABBITMQ
+    - REDIS 
+- Pruebas
+    - Servidor de apps JAVA: Weblogic
+    - BBDD MySQL (mirroring)
+    - RABBITMQ
+    - REDIS 
+- PreProduccion
+    - Servidor de apps JAVA: Weblogic x 2
+    - Balanceador de carga x2 (activo pasivo) VIPA
+    - BBDD MySQL (mirroring) + REPLICA
+    - RABBITMQ x 3
+    - REDIS x3
+- Produccion
+    - Servidor de apps JAVA: Weblogic x 4
+    - Balanceador de carga x2 (activo pasivo) VIPA
+    - BBDD MySQL (mirroring) + REPLICA
+    - RABBITMQ x 3
+    - REDIS x3
+Y si ofrezco este producto como servicio a mis clientes... quizas tengo 17 entornos de producción
+
+DEVOPS
+Pipeline en Jenkins: NUEVO PROYECTO- Crear Entorno desarrollo
+    1º Terraform - Proveer/Adquirir la infra
+    2º Ansible   - Aprovisionar la infra (plancharla)
+
+Pipeline de CI - Ejecutar pruebas previo paso a prod
+    Pipeline en Jenkins: Crea entorno pre
+        1º Terraform - Proveer/Adquirir la infra
+        2º Ansible   - Aprovisionar la infra (plancharla)
+    Pipeline: Ejecución de pruebas
+        Que están automatizadas
+    Pipeline en Jenkins: Destruir entorno pre
+        1º Terraform - Desmantelar la infra
+
+---
+Los contenedores son una forma de distribuir e instalar software. Son la forma hoy en día!
+
+## Modelo de instalación tradicional
+
+        App1   App2   App3          Problemas:
+    --------------------------          - App1, App2 y App3 tienen dependencias/configuraciones SO incompatibles
+        Sistema Operativo               - Seguridad: App1 potencialmente puede acceder a los datos de App2
+    --------------------------          - App1 (100% CPU) ->    App1            OFFLINE
+             HIERRO                                             App2 y App3     OFFLINE
+
+
+## Modelo de instalación basado en VM
+
+        App1    | App2 + App3       Problemas:   
+    --------------------------          - Configuración más compleja
+        SO 1    |   SO 2                - Mnto más complejo
+    --------------------------          - Merma en el rendimiento de las apps.
+        VM 1    |   VM 2                - Perdida de recursos
+    --------------------------      
+        Hipervisor: VMWare
+        HyperV, KVM, Citrix, 
+        VirtualBox
+    --------------------------      
+        Sistema Operativo           
+    --------------------------      
+             HIERRO                 
+
+## Modelo de instalación basado en Contenedores
+
+        App1    | App2 + App3   
+    --------------------------  
+        C 1     |   C 2         
+    --------------------------      
+      Gestor de contenedores:
+      docker, podman, crio, 
+      containerd
+    --------------------------      
+      Sistema Operativo LINUX          
+    --------------------------      
+             HIERRO                 
+
+Kubernetes(K3S, K8S, minikube, minishift, OKD, Openshift, Tamzu)
+    HIERRO1
+        crio/containerd
+    HIERRO2
+        kubelet
+        kubeadm
+        crio/containerd
+        contenedor1-nginx
+    HIERRO3
+        crio/containerd
+
+# Kubernetes/Openshift/Tamzu
+
+Gestores de gestores de contenedores
++ que me dan todo lo que necesito para un entorno de producción
+     Balanceador de carga           SERVICE
+     Proxy reverso                  INGRESS CONTROLLER
+     Regras de firewall de red      NETWORK POLICIES
+
+
+Openshift = Kubernetes + Añadidos de redhat
+    Capacidad de solicitar máquinas que añadir al cluster. cuando necesite más capacidad de cómputo
+        Redhat: AWS, IBM, AZURE
+            Monta unos scripts de terraform para contratar máquinas o descontratarlas en esos clouds en auto.
+            Monta unos playbooks de ansible para planchar esas máquinas (paquetería)
+            Programa que monitoriza los recursos de los nodos y lanza esos scripts a conveniencia
+            
+Tamzu = Kubernetes + Añadidos de VMWare
+
+Karbon Nutanix Kubernetes = Kubernetes + añadidos de nutanix
+
+    UPSTREAM
+
+    Gratuita y opensource           Opensource y de pago     Opensource y gratis (sin mnto/soporte)
+    Fedora                    ----> RHEL                ---> CentOS
+    Novedades
+    
+    Wildfly                         JBoss
+    AWX                             Ansible Tower
+    OKD                             Openshift Container platform
+    
+    
+    
+    
+    
+    app1*   <<<
+    |
+    app2    <<<
+    x
+    app3    <<<
+    
+        BRAIN SPLITTING
+    
+    Todas las herramientas que guardan datos: BBDD, Indexadores, Caches, Mensajería
+    
+    
+---
+
+# Terraform 
+                                        fichero tfstate
+    Estado deseado  ----> plan ----> Estado que Terraform conoce < -- refresh ---  Estado real (en backend)
+                    ----------------> apply ------------------------------------->
+                    
+## Variables
+
+Una vez definidas, en tiempo de ejecución puedo darle valores:
+
+- Suministrarla en el comando con --var  NOMBRE_VARIABLE=VALOR
+- Suministrarla en un fichero al comando con --var-file FICHERO
+- Si no le digo nada, me la pide por pantalla
