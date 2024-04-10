@@ -1,3 +1,4 @@
+
          # v Tipo recurso
                        # v id interno dentro del script
 resource "docker_image" "miimagen" {

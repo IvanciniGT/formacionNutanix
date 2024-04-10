@@ -12,6 +12,6 @@ provider "nutanix" {
     password     = var.nutanix_password
     endpoint     = var.nutanix_endpoint
     port         = var.nutanix_port
-    wait_timeout = var.nutanix_insecure
-    insecure     = true
+    insecure     = var.nutanix_insecure
+    wait_timeout = 10
 }
