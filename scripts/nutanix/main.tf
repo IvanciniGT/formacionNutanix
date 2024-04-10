@@ -13,7 +13,8 @@ resource "nutanix_image" "image" {
 }
 
 resource "nutanix_virtual_machine" "vm" {
-  name = "${var.despliegue}${var.vm_name}"
+  count = 4
+  name = "${var.despliegue}${var.vm_name}-${count.index}"
   #cluster_uuid = var.nutanix_cluster_id # Sería muy muy mala práctica en terraform
   # Una variable solo debe aparecer en los fichero en uso 1 UNICA VEZ
   cluster_uuid = data.nutanix_cluster.cluster.cluster_id
